@@ -2,30 +2,30 @@
 
 module Main where
 
-import PostgREST.Config (AppConfig (..),
-                         readOptions)
+import           PostgREST.App
+import           PostgREST.Config         (AppConfig (..), readOptions)
 import           PostgREST.DbStructure
 
-import PostgRESTOAuth
+import           PostgRESTOAuth
 
-import qualified Hasql.Pool                           as P
 import           Data.IORef
-import           Data.String.Conversions              (cs)
-
+import           Data.String.Conversions  (cs)
+import qualified Hasql.Pool               as P
 import           Network.Wai.Handler.Warp
 
 
 main :: IO ()
 main = do
   conf <- readOptions
+
   let port = configPort conf
       pgConfig = cs $ configDatabase conf
       poolConfig = configPool conf
-      appSettings = setPort port
-        . setServerName  "postgrest"
-        $ defaultSettings
+      appSettings = setPort port . setServerName  "postgrest" $ defaultSettings
+
   pool <- P.acquire (poolConfig, 10, pgConfig)
-  structure <- P.use pool $ getDbStructure (cs $ configSchema conf)
-  refDbStructure <- newIORef $ either (error.show) id structure
+  dbStructure <- P.use pool $ getDbStructure (cs $ configSchema conf)
+  refDbStructure <- newIORef $ either (error.show) id dbStructure
+
   putStrLn $ "Listening on port " ++ show port
-  runSettings appSettings $ postgrestOAuthApp conf refDbStructure pool
+  runSettings appSettings $ jwtAuth $ postgrest conf refDbStructure pool
