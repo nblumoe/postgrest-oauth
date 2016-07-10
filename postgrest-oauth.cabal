@@ -19,6 +19,8 @@ library
  build-depends:      base >= 4.7 && < 5
                    , bytestring
                    , hasql-pool
+                   , hoauth2
+                   , http-conduit
                    , http-types
                    , postgresql-libpq
                    , postgrest >= 0.3 && < 0.4
@@ -29,6 +31,7 @@ library
                    , word8
  default-language:   Haskell2010
  default-extensions: OverloadedStrings
+ other-modules:      Keys
 
 executable postgrest-oauth
   hs-source-dirs:      app
@@ -38,6 +41,8 @@ executable postgrest-oauth
   build-depends:       base >= 4.7 && < 5
                      , bytestring
                      , hasql-pool
+                     , hoauth2
+                     , http-conduit
                      , http-types
                      , postgresql-libpq
                      , postgrest >= 0.3 && < 0.4
