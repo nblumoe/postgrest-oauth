@@ -28,4 +28,5 @@ main = do
   refDbStructure <- newIORef $ either (error.show) id dbStructure
 
   putStrLn $ "Listening on port " ++ show port
-  runSettings appSettings $ jwtAuth $ postgrest conf refDbStructure pool
+  app <- jwtAuth
+  runSettings appSettings $ app $ postgrest conf refDbStructure pool
